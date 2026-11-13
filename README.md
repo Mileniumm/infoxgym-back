@@ -1,98 +1,65 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# In Fox Gym · API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API del sitio de **In Fox Gym**, un gimnasio. Maneja los horarios de las clases que se muestran en la web y que se editan desde el panel de administración.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+El frontend está en [infoxgym-front](https://github.com/Mileniumm/infoxgym-front).
 
-## Description
+## Tecnologías
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [NestJS](https://nestjs.com/) 11 con TypeScript
+- [Supabase](https://supabase.com/) (PostgreSQL) a través de `@supabase/supabase-js`
+- `@nestjs/config` para las variables de entorno
 
-## Project setup
+## Endpoints
 
-```bash
-$ npm install
+| Método | Ruta | Qué hace |
+| --- | --- | --- |
+| `GET` | `/schedule` | Devuelve los días de la semana, cada uno con sus clases (horario, actividad y profe) |
+| `POST` | `/schedule/:day_id` | Agrega una clase al día indicado |
+| `PUT` | `/schedule/:id` | Modifica una clase |
+| `DELETE` | `/schedule/:id` | Elimina una clase |
+
+## Estructura
+
+```
+src/
+├── main.ts                 arranque, CORS y puerto
+├── app.module.ts
+├── schedule/               módulo de horarios: controller, service, DTOs y entidades
+└── supabase/               servicio que crea el cliente de Supabase con las variables de entorno
 ```
 
-## Compile and run the project
+La lógica sigue la separación de NestJS: el controller recibe el pedido, el service consulta Supabase y el módulo `supabase` se inyecta donde se necesita.
 
-```bash
-# development
-$ npm run start
+## Cómo correrlo
 
-# watch mode
-$ npm run start:dev
+1. Instalar las dependencias:
 
-# production mode
-$ npm run start:prod
-```
+   ```bash
+   npm install
+   ```
 
-## Run tests
+2. Crear un archivo `.env` en la raíz (podés copiar `.env.example`) con los datos del proyecto de Supabase:
 
-```bash
-# unit tests
-$ npm run test
+   ```
+   SUPABASE_URL=https://tu-proyecto.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=tu-clave
+   PORT=3001
+   ```
 
-# e2e tests
-$ npm run test:e2e
+   El `.env` está en el `.gitignore`: las claves no se suben al repositorio.
 
-# test coverage
-$ npm run test:cov
-```
+3. Levantar la API en modo desarrollo:
 
-## Deployment
+   ```bash
+   npm run start:dev
+   ```
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+   Queda escuchando en `http://localhost:3001`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Base de datos
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Usa dos tablas de Supabase:
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- `days`: los días de la semana (`id`, `name`).
+- `schedules`: las clases de cada día (`id`, `day_id`, `start_time`, `end_time`, `activity`, `trainer`).
